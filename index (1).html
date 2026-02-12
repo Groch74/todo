@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covey Bullet Journal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .date-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .date-selector button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .date-selector button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .date-selector input[type="date"] {
+            padding: 10px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .current-date {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .view-toggle button {
+            padding: 12px 24px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .view-toggle button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .add-task-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .add-task-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .add-task-form input[type="text"] {
+            flex: 2;
+            min-width: 300px;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.05em;
+        }
+
+        .add-task-form select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+        }
+
+        .add-task-form button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .add-task-form button:hover {
+            background: #5568d3;
+        }
+
+        .filter-section {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .filter-section h4 {
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-controls button {
+            padding: 10px 20px;
+            background: #9575cd;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+
+        .filter-controls button:hover {
+            background: #7e57c2;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .task-badge {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .account-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        .context-badge {
+            background: #f3e5f5;
+            color: #6a1b9a;
+            border: 1px solid #ce93d8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .account-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .account-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .account-item button {
+            padding: 5px 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-account-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-account-form input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .add-account-form button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .modal-actions .close-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quadrant {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 250px;
+        }
+
+        .quadrant.drag-over {
+            background: #e8eaf6;
+            border: 2px dashed #667eea;
+        }
+
+        .quadrant h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quadrant.q1 { border-left: 4px solid #e74c3c; }
+        .quadrant.q2 { border-left: 4px solid #3498db; }
+        .quadrant.q3 { border-left: 4px solid #f39c12; }
+        .quadrant.q4 { border-left: 4px solid #95a5a6; }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: move;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .task-item.dragging {
+            opacity: 0.5;
+        }
+
+        .task-bullet {
+            font-size: 1.5em;
+            cursor: pointer;
+            user-select: none;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .task-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .task-actions button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .complete-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .notes-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .calendar-btn {
+            background: #2980b9;
+            color: white;
+        }
+
+        .migrate-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .schedule-btn {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .task-notes {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f9f9f9;
+            border-left: 3px solid #f39c12;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #555;
+            font-style: italic;
+        }
+
+        .notes-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notes-modal.active {
+            display: flex;
+        }
+
+        .notes-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .notes-modal-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .notes-modal-content textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .notes-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .notes-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .save-notes-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .cancel-notes-btn {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .review-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .review-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .review-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .review-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .review-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .review-tab:hover {
+            color: #667eea;
+        }
+
+        .review-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .review-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+
+        .restore-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .uncomplete-btn {
+            background: #e67e22;
+            color: white;
+        }
+
+        .permanent-delete-btn {
+            background: #c0392b;
+            color: white;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .legend {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .quadrant-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .add-task-form {
+                flex-direction: column;
+            }
+
+            .add-task-form input[type="text"],
+            .add-task-form select,
+            .add-task-form button {
+                width: 100%;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Covey Bullet Journal</h1>
+            <p>Plan • Prioritize • Progress</p>
+            <div class="date-selector">
+                <button onclick="changeDate(-1)">← Prev</button>
+                <span class="current-date" id="currentDate"></span>
+                <button onclick="changeDate(1)">Next →</button>
+                <input type="date" id="datePicker" onchange="jumpToDate()">
+                <button onclick="goToToday()">Today</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="view-toggle">
+                <button class="active" onclick="switchView('quadrant')">Quadrant View</button>
+                <button onclick="switchView('daily')">Daily List</button>
+            </div>
+
+            <div class="legend">
+                <h4>Bullet Journal Key:</h4>
+                <div class="legend-items">
+                    <div class="legend-item"><span>•</span> Task</div>
+                    <div class="legend-item"><span>×</span> Complete</div>
+                    <div class="legend-item"><span>></span> Migrated</div>
+                    <div class="legend-item"><span><</span> Scheduled</div>
+                </div>
+            </div>
+
+            <div class="add-task-section">
+                <h3>Add New Task</h3>
+                <div class="add-task-form">
+                    <input type="text" id="taskInput" placeholder="What needs to be done?" onkeypress="handleEnter(event)">
+                    <select id="accountSelect">
+                        <option value="">Select Account/Topic</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Account 1">Account 1</option>
+                        <option value="Account 2">Account 2</option>
+                        <option value="Account 3">Account 3</option>
+                        <option value="Account 4">Account 4</option>
+                        <option value="Account 5">Account 5</option>
+                        <option value="Account 6">Account 6</option>
+                        <option value="Account 7">Account 7</option>
+                    </select>
+                    <select id="contextSelect">
+                        <option value="">Context</option>
+                        <option value="💻 Computer">💻 Computer</option>
+                        <option value="👤 In Person">👤 In Person</option>
+                        <option value="📞 Call/Text">📞 Call/Text</option>
+                        <option value="⏳ Waiting for">⏳ Waiting for</option>
+                    </select>
+                    <select id="quadrantSelect">
+                        <option value="q1">Q1: Urgent & Important</option>
+                        <option value="q2">Q2: Not Urgent & Important</option>
+                        <option value="q3">Q3: Urgent & Not Important</option>
+                        <option value="q4">Q4: Not Urgent & Not Important</option>
+                    </select>
+                    <button onclick="addTask()">Add Task</button>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <h4>Filter Tasks:</h4>
+                <div class="filter-controls">
+                    <select id="filterAccount" onchange="renderTasks()">
+                        <option value="">All Accounts</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Account 1">Account 1</option>
+                        <option value="Account 2">Account 2</option>
+                        <option value="Account 3">Account 3</option>
+                        <option value="Account 4">Account 4</option>
+                        <option value="Account 5">Account 5</option>
+                        <option value="Account 6">Account 6</option>
+                        <option value="Account 7">Account 7</option>
+                    </select>
+                    <select id="filterContext" onchange="renderTasks()">
+                        <option value="">All Contexts</option>
+                        <option value="💻 Computer">💻 Computer</option>
+                        <option value="👤 In Person">👤 In Person</option>
+                        <option value="📞 Call/Text">📞 Call/Text</option>
+                        <option value="⏳ Waiting for">⏳ Waiting for</option>
+                    </select>
+                    <button onclick="clearFilters()">Clear Filters</button>
+                    <button onclick="openAccountManager()">⚙️ Manage Accounts</button>
+                </div>
+            </div>
+
+            <div id="quadrantView" class="quadrant-grid">
+                <div class="quadrant q1">
+                    <h3>🔥 Q1: Urgent & Important</h3>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Crises, deadlines, problems</p>
+                    <ul class="task-list" id="q1-tasks"></ul>
+                </div>
+                <div class="quadrant q2">
+                    <h3>🎯 Q2: Not Urgent & Important</h3>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Planning, prevention, growth</p>
+                    <ul class="task-list" id="q2-tasks"></ul>
+                </div>
+                <div class="quadrant q3">
+                    <h3>⚡ Q3: Urgent & Not Important</h3>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Interruptions, some emails</p>
+                    <ul class="task-list" id="q3-tasks"></ul>
+                </div>
+                <div class="quadrant q4">
+                    <h3>💤 Q4: Not Urgent & Not Important</h3>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Time wasters, busy work</p>
+                    <ul class="task-list" id="q4-tasks"></ul>
+                </div>
+            </div>
+
+            <div id="dailyView" class="quadrant-grid" style="display: none;">
+                <div class="quadrant">
+                    <h3>📋 All Tasks for This Day</h3>
+                    <ul class="task-list" id="daily-tasks"></ul>
+                </div>
+            </div>
+
+            <div class="review-section">
+                <h3>📊 Day Review</h3>
+                <div class="review-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTasks">0</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedTasks">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="incompleteTasks">0</div>
+                        <div class="stat-label">Incomplete</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completionRate">0%</div>
+                        <div class="stat-label">Completion Rate</div>
+                    </div>
+                </div>
+                
+                <div class="review-tabs">
+                    <button class="review-tab active" onclick="switchReviewTab('completed')">Completed Tasks</button>
+                    <button class="review-tab" onclick="switchReviewTab('deleted')">Deleted Tasks</button>
+                </div>
+                
+                <div id="completedTasksView" class="review-content">
+                    <ul class="task-list" id="completed-tasks-list"></ul>
+                </div>
+                
+                <div id="deletedTasksView" class="review-content" style="display: none;">
+                    <ul class="task-list" id="deleted-tasks-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <h3>Manage Accounts</h3>
+            <div class="add-account-form">
+                <input type="text" id="newAccountInput" placeholder="New account name">
+                <button onclick="addAccount()">Add</button>
+            </div>
+            <ul class="account-list" id="accountList"></ul>
+            <div class="modal-actions">
+                <button class="close-btn" onclick="closeAccountManager()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notesModal" class="notes-modal">
+        <div class="notes-modal-content">
+            <h3>Task Notes</h3>
+            <textarea id="notesTextarea" placeholder="Add notes about this task..."></textarea>
+            <div class="notes-modal-actions">
+                <button class="cancel-notes-btn" onclick="closeNotesModal()">Cancel</button>
+                <button class="save-notes-btn" onclick="saveNotes()">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let currentView = 'quadrant';
+        let accounts = ['Personal', 'Account 1', 'Account 2', 'Account 3', 'Account 4', 'Account 5', 'Account 6', 'Account 7'];
+        let currentNotesTask = null;
+
+        // Load custom accounts from storage
+        async function loadAccounts() {
+            if (window.storage) {
+                try {
+                    const result = await window.storage.get('custom-accounts');
+                    if (result) {
+                        accounts = JSON.parse(result.value);
+                        updateAccountSelectors();
+                    }
+                } catch (error) {
+                    console.error('Error loading accounts:', error);
+                }
+            } else {
+                const stored = localStorage.getItem('custom-accounts');
+                if (stored) {
+                    accounts = JSON.parse(stored);
+                    updateAccountSelectors();
+                }
+            }
+        }
+
+        async function saveAccounts() {
+            if (window.storage) {
+                try {
+                    await window.storage.set('custom-accounts', JSON.stringify(accounts));
+                } catch (error) {
+                    console.error('Error saving accounts:', error);
+                    localStorage.setItem('custom-accounts', JSON.stringify(accounts));
+                }
+            } else {
+                localStorage.setItem('custom-accounts', JSON.stringify(accounts));
+            }
+        }
+
+        function updateAccountSelectors() {
+            const selectors = ['accountSelect', 'filterAccount'];
+            selectors.forEach(id => {
+                const select = document.getElementById(id);
+                const currentValue = select.value;
+                const isFilter = id === 'filterAccount';
+                
+                select.innerHTML = isFilter ? '<option value="">All Accounts</option>' : '<option value="">Select Account/Topic</option>';
+                
+                accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account;
+                    option.textContent = account;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue) select.value = currentValue;
+            });
+        }
+
+        function openAccountManager() {
+            document.getElementById('accountModal').classList.add('active');
+            renderAccountList();
+        }
+
+        function closeAccountManager() {
+            document.getElementById('accountModal').classList.remove('active');
+        }
+
+        function renderAccountList() {
+            const list = document.getElementById('accountList');
+            list.innerHTML = '';
+            
+            accounts.forEach((account, index) => {
+                const li = document.createElement('li');
+                li.className = 'account-item';
+                li.innerHTML = `
+                    <span>${account}</span>
+                    ${index > 0 ? `<button onclick="deleteAccount(${index})">Delete</button>` : '<span style="color: #999;">Default</span>'}
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function addAccount() {
+            const input = document.getElementById('newAccountInput');
+            const name = input.value.trim();
+            
+            if (!name) {
+                alert('Please enter an account name');
+                return;
+            }
+            
+            if (accounts.includes(name)) {
+                alert('This account already exists');
+                return;
+            }
+            
+            accounts.push(name);
+            await saveAccounts();
+            updateAccountSelectors();
+            renderAccountList();
+            input.value = '';
+        }
+
+        async function deleteAccount(index) {
+            if (!confirm(`Delete "${accounts[index]}"?`)) return;
+            
+            accounts.splice(index, 1);
+            await saveAccounts();
+            updateAccountSelectors();
+            renderAccountList();
+            renderTasks();
+        }
+
+        function clearFilters() {
+            document.getElementById('filterAccount').value = '';
+            document.getElementById('filterContext').value = '';
+            renderTasks();
+        }
+
+        // Initialize
+        window.addEventListener('storage', function(e) {
+            if (e.key && e.key.startsWith('tasks-')) {
+                renderTasks();
+            }
+        });
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function getTasks(date) {
+            const key = `tasks-${formatDate(date)}`;
+            const stored = window.storage ? null : localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : { q1: [], q2: [], q3: [], q4: [], deleted: [] };
+        }
+
+        async function saveTasks(date, tasks) {
+            const key = `tasks-${formatDate(date)}`;
+            if (window.storage) {
+                try {
+                    await window.storage.set(key, JSON.stringify(tasks));
+                } catch (error) {
+                    console.error('Storage error:', error);
+                    localStorage.setItem(key, JSON.stringify(tasks));
+                }
+            } else {
+                localStorage.setItem(key, JSON.stringify(tasks));
+            }
+        }
+
+        async function loadTasks(date) {
+            const key = `tasks-${formatDate(date)}`;
+            if (window.storage) {
+                try {
+                    const result = await window.storage.get(key);
+                    return result ? JSON.parse(result.value) : { q1: [], q2: [], q3: [], q4: [], deleted: [] };
+                } catch (error) {
+                    console.error('Storage error:', error);
+                    const stored = localStorage.getItem(key);
+                    return stored ? JSON.parse(stored) : { q1: [], q2: [], q3: [], q4: [], deleted: [] };
+                }
+            } else {
+                const stored = localStorage.getItem(key);
+                return stored ? JSON.parse(stored) : { q1: [], q2: [], q3: [], q4: [], deleted: [] };
+            }
+        }
+
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', options);
+            document.getElementById('datePicker').value = formatDate(currentDate);
+        }
+
+        function changeDate(days) {
+            currentDate.setDate(currentDate.getDate() + days);
+            updateDateDisplay();
+            renderTasks();
+        }
+
+        function jumpToDate() {
+            const dateValue = document.getElementById('datePicker').value;
+            if (dateValue) {
+                currentDate = new Date(dateValue + 'T12:00:00');
+                updateDateDisplay();
+                renderTasks();
+            }
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            updateDateDisplay();
+            renderTasks();
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'quadrant') {
+                document.getElementById('quadrantView').style.display = 'grid';
+                document.getElementById('dailyView').style.display = 'none';
+            } else {
+                document.getElementById('quadrantView').style.display = 'none';
+                document.getElementById('dailyView').style.display = 'grid';
+            }
+            renderTasks();
+        }
+
+        async function addTask() {
+            const input = document.getElementById('taskInput');
+            const quadrant = document.getElementById('quadrantSelect').value;
+            const account = document.getElementById('accountSelect').value;
+            const context = document.getElementById('contextSelect').value;
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            const tasks = await loadTasks(currentDate);
+            tasks[quadrant].push({
+                id: Date.now(),
+                text: text,
+                account: account,
+                context: context,
+                status: 'open', // open, completed, migrated, scheduled
+                createdAt: new Date().toISOString()
+            });
+
+            await saveTasks(currentDate, tasks);
+            input.value = '';
+            document.getElementById('accountSelect').value = '';
+            document.getElementById('contextSelect').value = '';
+            renderTasks();
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                addTask();
+            }
+        }
+
+        function getBullet(status) {
+            switch(status) {
+                case 'open': return '•';
+                case 'completed': return '×';
+                case 'migrated': return '>';
+                case 'scheduled': return '<';
+                default: return '•';
+            }
+        }
+
+        async function toggleTaskStatus(quadrant, taskId) {
+            const tasks = await loadTasks(currentDate);
+            const task = tasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                if (task.status === 'open') {
+                    task.status = 'completed';
+                } else if (task.status === 'completed') {
+                    task.status = 'open';
+                }
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+        }
+
+        async function completeTask(quadrant, taskId) {
+            const tasks = await loadTasks(currentDate);
+            const task = tasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                task.status = 'completed';
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+        }
+
+        function openNotesModal(quadrant, taskId) {
+            currentNotesTask = { quadrant, taskId };
+            
+            loadTasks(currentDate).then(tasks => {
+                const task = tasks[quadrant].find(t => t.id === taskId);
+                if (task) {
+                    document.getElementById('notesTextarea').value = task.notes || '';
+                    document.getElementById('notesModal').classList.add('active');
+                }
+            });
+        }
+
+        function closeNotesModal() {
+            document.getElementById('notesModal').classList.remove('active');
+            currentNotesTask = null;
+        }
+
+        async function saveNotes() {
+            if (!currentNotesTask) return;
+            
+            const { quadrant, taskId } = currentNotesTask;
+            const notes = document.getElementById('notesTextarea').value.trim();
+            
+            const tasks = await loadTasks(currentDate);
+            const task = tasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                task.notes = notes;
+                await saveTasks(currentDate, tasks);
+                closeNotesModal();
+                renderTasks();
+            }
+        }
+
+        async function exportToCalendar(quadrant, taskId) {
+            const tasks = await loadTasks(currentDate);
+            const task = tasks[quadrant].find(t => t.id === taskId);
+            
+            if (!task) return;
+            
+            // Create .ics file content
+            const startDate = new Date(currentDate);
+            startDate.setHours(9, 0, 0, 0); // Default to 9 AM
+            
+            const endDate = new Date(startDate);
+            endDate.setHours(10, 0, 0, 0); // 1 hour duration
+            
+            const formatDate = (date) => {
+                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+            
+            const accountText = task.account ? ` [${task.account}]` : '';
+            const contextText = task.context ? ` - ${task.context}` : '';
+            const notesText = task.notes ? `\n\nNotes: ${task.notes}` : '';
+            
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Covey Bullet Journal//EN
+BEGIN:VEVENT
+UID:${taskId}@covey-journal
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(startDate)}
+DTEND:${formatDate(endDate)}
+SUMMARY:${task.text}${accountText}${contextText}
+DESCRIPTION:Quadrant: ${quadrant.toUpperCase()}${notesText}
+STATUS:${task.status === 'completed' ? 'COMPLETED' : 'CONFIRMED'}
+END:VEVENT
+END:VCALENDAR`;
+            
+            // Create download link
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${task.text.substring(0, 30)}.ics`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Calendar event created! Open the downloaded .ics file to add it to Microsoft Calendar, Outlook, or any calendar app.');
+        }
+
+        async function deleteTask(quadrant, taskId) {
+            if (!confirm('Move this task to deleted?')) return;
+            
+            const tasks = await loadTasks(currentDate);
+            const taskIndex = tasks[quadrant].findIndex(t => t.id === taskId);
+            
+            if (taskIndex !== -1) {
+                const task = tasks[quadrant][taskIndex];
+                task.deletedFrom = quadrant;
+                task.deletedAt = new Date().toISOString();
+                
+                if (!tasks.deleted) tasks.deleted = [];
+                tasks.deleted.push(task);
+                tasks[quadrant].splice(taskIndex, 1);
+                
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+        }
+
+        async function restoreTask(taskId) {
+            const tasks = await loadTasks(currentDate);
+            const taskIndex = tasks.deleted.findIndex(t => t.id === taskId);
+            
+            if (taskIndex !== -1) {
+                const task = tasks.deleted[taskIndex];
+                const originalQuadrant = task.deletedFrom || 'q1';
+                
+                delete task.deletedFrom;
+                delete task.deletedAt;
+                
+                tasks[originalQuadrant].push(task);
+                tasks.deleted.splice(taskIndex, 1);
+                
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+        }
+
+        async function permanentlyDeleteTask(taskId) {
+            if (!confirm('Permanently delete this task? This cannot be undone.')) return;
+            
+            const tasks = await loadTasks(currentDate);
+            tasks.deleted = tasks.deleted.filter(t => t.id !== taskId);
+            await saveTasks(currentDate, tasks);
+            renderTasks();
+        }
+
+        async function uncompleteTask(quadrant, taskId) {
+            const tasks = await loadTasks(currentDate);
+            const task = tasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                task.status = 'open';
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+        }
+
+        function switchReviewTab(tab) {
+            document.querySelectorAll('.review-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'completed') {
+                document.getElementById('completedTasksView').style.display = 'block';
+                document.getElementById('deletedTasksView').style.display = 'none';
+            } else {
+                document.getElementById('completedTasksView').style.display = 'none';
+                document.getElementById('deletedTasksView').style.display = 'block';
+            }
+        }
+
+        // Drag and drop functionality
+        function handleDragStart(e, quadrant, taskId) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', JSON.stringify({ quadrant, taskId }));
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e, targetQuadrant) {
+            const quadrantEl = document.getElementById(`${targetQuadrant}-tasks`).closest('.quadrant');
+            if (quadrantEl) {
+                quadrantEl.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e, targetQuadrant) {
+            const quadrantEl = document.getElementById(`${targetQuadrant}-tasks`).closest('.quadrant');
+            if (quadrantEl) {
+                quadrantEl.classList.remove('drag-over');
+            }
+        }
+
+        async function handleDrop(e, targetQuadrant) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+
+            // Remove drag-over styling
+            const quadrantEl = document.getElementById(`${targetQuadrant}-tasks`).closest('.quadrant');
+            if (quadrantEl) {
+                quadrantEl.classList.remove('drag-over');
+            }
+
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const { quadrant: sourceQuadrant, taskId } = data;
+
+            // Don't do anything if dropped in same quadrant
+            if (sourceQuadrant === targetQuadrant) {
+                return false;
+            }
+
+            // Move task from source to target quadrant
+            const tasks = await loadTasks(currentDate);
+            const taskIndex = tasks[sourceQuadrant].findIndex(t => t.id === taskId);
+            
+            if (taskIndex !== -1) {
+                const task = tasks[sourceQuadrant][taskIndex];
+                tasks[sourceQuadrant].splice(taskIndex, 1);
+                tasks[targetQuadrant].push(task);
+                await saveTasks(currentDate, tasks);
+                renderTasks();
+            }
+
+            return false;
+        }
+
+        function setupDragAndDrop() {
+            ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
+                const quadrantEl = document.querySelector(`.quadrant.${quadrant}`);
+                if (quadrantEl) {
+                    quadrantEl.addEventListener('dragover', handleDragOver);
+                    quadrantEl.addEventListener('dragenter', (e) => handleDragEnter(e, quadrant));
+                    quadrantEl.addEventListener('dragleave', (e) => handleDragLeave(e, quadrant));
+                    quadrantEl.addEventListener('drop', (e) => handleDrop(e, quadrant));
+                }
+            });
+        }
+
+        async function migrateTask(quadrant, taskId) {
+            const days = prompt('Migrate to how many days from now?', '1');
+            if (!days) return;
+            
+            const targetDate = new Date(currentDate);
+            targetDate.setDate(targetDate.getDate() + parseInt(days));
+            
+            const sourceTasks = await loadTasks(currentDate);
+            const task = sourceTasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                task.status = 'migrated';
+                await saveTasks(currentDate, sourceTasks);
+                
+                const targetTasks = await loadTasks(targetDate);
+                targetTasks[quadrant].push({
+                    ...task,
+                    id: Date.now(),
+                    status: 'open',
+                    migratedFrom: formatDate(currentDate)
+                });
+                await saveTasks(targetDate, targetTasks);
+                
+                renderTasks();
+            }
+        }
+
+        async function scheduleTask(quadrant, taskId) {
+            const dateStr = prompt('Schedule for date (YYYY-MM-DD):');
+            if (!dateStr) return;
+            
+            const targetDate = new Date(dateStr + 'T12:00:00');
+            
+            const sourceTasks = await loadTasks(currentDate);
+            const task = sourceTasks[quadrant].find(t => t.id === taskId);
+            
+            if (task) {
+                task.status = 'scheduled';
+                await saveTasks(currentDate, sourceTasks);
+                
+                const targetTasks = await loadTasks(targetDate);
+                targetTasks[quadrant].push({
+                    ...task,
+                    id: Date.now(),
+                    status: 'open',
+                    scheduledFrom: formatDate(currentDate)
+                });
+                await saveTasks(targetDate, targetTasks);
+                
+                renderTasks();
+            }
+        }
+
+        async function renderTasks() {
+            const tasks = await loadTasks(currentDate);
+            const filterAccount = document.getElementById('filterAccount').value;
+            const filterContext = document.getElementById('filterContext').value;
+            
+            // Filter function
+            const shouldShowTask = (task) => {
+                if (filterAccount && task.account !== filterAccount) return false;
+                if (filterContext && task.context !== filterContext) return false;
+                return true;
+            };
+            
+            // Render quadrant view
+            ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
+                const list = document.getElementById(`${quadrant}-tasks`);
+                list.innerHTML = '';
+                
+                const filteredTasks = tasks[quadrant].filter(shouldShowTask);
+                
+                if (filteredTasks.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No tasks</div>';
+                    return;
+                }
+                
+                filteredTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.draggable = true;
+                    li.addEventListener('dragstart', (e) => handleDragStart(e, quadrant, task.id));
+                    li.addEventListener('dragend', handleDragEnd);
+                    
+                    let metaHtml = '';
+                    if (task.account || task.context) {
+                        metaHtml = '<div class="task-meta">';
+                        if (task.account) {
+                            metaHtml += `<span class="task-badge account-badge">${task.account}</span>`;
+                        }
+                        if (task.context) {
+                            metaHtml += `<span class="task-badge context-badge">${task.context}</span>`;
+                        }
+                        metaHtml += '</div>';
+                    }
+                    
+                    let notesHtml = '';
+                    if (task.notes) {
+                        notesHtml = `<div class="task-notes">📝 ${task.notes}</div>`;
+                    }
+                    
+                    const completeBtn = task.status !== 'completed' 
+                        ? `<button class="complete-btn" onclick="completeTask('${quadrant}', ${task.id})" title="Mark as complete">✓</button>`
+                        : '';
+                    
+                    li.innerHTML = `
+                        <span class="task-bullet" onclick="toggleTaskStatus('${quadrant}', ${task.id})">${getBullet(task.status)}</span>
+                        <div style="flex: 1;">
+                            <span class="task-text ${task.status === 'completed' ? 'completed' : ''}">${task.text}</span>
+                            ${metaHtml}
+                            ${notesHtml}
+                        </div>
+                        <div class="task-actions">
+                            ${completeBtn}
+                            <button class="notes-btn" onclick="openNotesModal('${quadrant}', ${task.id})" title="Add/edit notes">📝</button>
+                            <button class="calendar-btn" onclick="exportToCalendar('${quadrant}', ${task.id})" title="Export to calendar">📅</button>
+                            <button class="migrate-btn" onclick="migrateTask('${quadrant}', ${task.id})" title="Migrate to future date">→</button>
+                            <button class="schedule-btn" onclick="scheduleTask('${quadrant}', ${task.id})" title="Schedule for specific date">🗓️</button>
+                            <button class="delete-btn" onclick="deleteTask('${quadrant}', ${task.id})">×</button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            });
+
+            // Render daily view
+            const dailyList = document.getElementById('daily-tasks');
+            dailyList.innerHTML = '';
+            
+            let allTasks = [];
+            ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
+                tasks[quadrant].forEach(task => {
+                    if (shouldShowTask(task)) {
+                        allTasks.push({ ...task, quadrant });
+                    }
+                });
+            });
+
+            if (allTasks.length === 0) {
+                dailyList.innerHTML = '<div class="empty-state">No tasks for this day</div>';
+            } else {
+                allTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    
+                    let metaHtml = '';
+                    if (task.account || task.context) {
+                        metaHtml = '<div class="task-meta">';
+                        if (task.account) {
+                            metaHtml += `<span class="task-badge account-badge">${task.account}</span>`;
+                        }
+                        if (task.context) {
+                            metaHtml += `<span class="task-badge context-badge">${task.context}</span>`;
+                        }
+                        metaHtml += '</div>';
+                    }
+                    
+                    let notesHtml = '';
+                    if (task.notes) {
+                        notesHtml = `<div class="task-notes">📝 ${task.notes}</div>`;
+                    }
+                    
+                    const completeBtn = task.status !== 'completed' 
+                        ? `<button class="complete-btn" onclick="completeTask('${task.quadrant}', ${task.id})" title="Mark as complete">✓</button>`
+                        : '';
+                    
+                    li.innerHTML = `
+                        <span class="task-bullet" onclick="toggleTaskStatus('${task.quadrant}', ${task.id})">${getBullet(task.status)}</span>
+                        <div style="flex: 1;">
+                            <span class="task-text ${task.status === 'completed' ? 'completed' : ''}">${task.text}</span>
+                            ${metaHtml}
+                            ${notesHtml}
+                        </div>
+                        <div class="task-actions">
+                            ${completeBtn}
+                            <button class="notes-btn" onclick="openNotesModal('${task.quadrant}', ${task.id})" title="Add/edit notes">📝</button>
+                            <button class="calendar-btn" onclick="exportToCalendar('${task.quadrant}', ${task.id})" title="Export to calendar">📅</button>
+                            <button class="migrate-btn" onclick="migrateTask('${task.quadrant}', ${task.id})" title="Migrate to future date">→</button>
+                            <button class="schedule-btn" onclick="scheduleTask('${task.quadrant}', ${task.id})" title="Schedule for specific date">🗓️</button>
+                            <button class="delete-btn" onclick="deleteTask('${task.quadrant}', ${task.id})">×</button>
+                        </div>
+                    `;
+                    dailyList.appendChild(li);
+                });
+            }
+
+            // Update stats (use unfiltered tasks for accurate stats)
+            let total = 0, completed = 0, incomplete = 0;
+            ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
+                tasks[quadrant].forEach(task => {
+                    total++;
+                    if (task.status === 'completed') completed++;
+                    else if (task.status === 'open') incomplete++;
+                });
+            });
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('incompleteTasks').textContent = incomplete;
+            document.getElementById('completionRate').textContent = total > 0 ? Math.round((completed / total) * 100) + '%' : '0%';
+            
+            // Render completed tasks list
+            const completedList = document.getElementById('completed-tasks-list');
+            completedList.innerHTML = '';
+            
+            let completedTasksList = [];
+            ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
+                tasks[quadrant].forEach(task => {
+                    if (task.status === 'completed') {
+                        completedTasksList.push({ ...task, quadrant });
+                    }
+                });
+            });
+            
+            if (completedTasksList.length === 0) {
+                completedList.innerHTML = '<div class="empty-state">No completed tasks</div>';
+            } else {
+                completedTasksList.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    
+                    let metaHtml = '';
+                    if (task.account || task.context) {
+                        metaHtml = '<div class="task-meta">';
+                        if (task.account) {
+                            metaHtml += `<span class="task-badge account-badge">${task.account}</span>`;
+                        }
+                        if (task.context) {
+                            metaHtml += `<span class="task-badge context-badge">${task.context}</span>`;
+                        }
+                        metaHtml += '</div>';
+                    }
+                    
+                    let notesHtml = '';
+                    if (task.notes) {
+                        notesHtml = `<div class="task-notes">📝 ${task.notes}</div>`;
+                    }
+                    
+                    li.innerHTML = `
+                        <span class="task-bullet">×</span>
+                        <div style="flex: 1;">
+                            <span class="task-text completed">${task.text}</span>
+                            ${metaHtml}
+                            ${notesHtml}
+                        </div>
+                        <div class="task-actions">
+                            <button class="uncomplete-btn" onclick="uncompleteTask('${task.quadrant}', ${task.id})" title="Mark as incomplete">↶</button>
+                            <button class="delete-btn" onclick="deleteTask('${task.quadrant}', ${task.id})">×</button>
+                        </div>
+                    `;
+                    completedList.appendChild(li);
+                });
+            }
+            
+            // Render deleted tasks list
+            const deletedList = document.getElementById('deleted-tasks-list');
+            deletedList.innerHTML = '';
+            
+            if (!tasks.deleted || tasks.deleted.length === 0) {
+                deletedList.innerHTML = '<div class="empty-state">No deleted tasks</div>';
+            } else {
+                tasks.deleted.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    
+                    let metaHtml = '';
+                    if (task.account || task.context) {
+                        metaHtml = '<div class="task-meta">';
+                        if (task.account) {
+                            metaHtml += `<span class="task-badge account-badge">${task.account}</span>`;
+                        }
+                        if (task.context) {
+                            metaHtml += `<span class="task-badge context-badge">${task.context}</span>`;
+                        }
+                        metaHtml += '</div>';
+                    }
+                    
+                    let notesHtml = '';
+                    if (task.notes) {
+                        notesHtml = `<div class="task-notes">📝 ${task.notes}</div>`;
+                    }
+                    
+                    li.innerHTML = `
+                        <span class="task-bullet" style="opacity: 0.5;">${getBullet(task.status)}</span>
+                        <div style="flex: 1; opacity: 0.7;">
+                            <span class="task-text">${task.text}</span>
+                            ${metaHtml}
+                            ${notesHtml}
+                        </div>
+                        <div class="task-actions">
+                            <button class="restore-btn" onclick="restoreTask(${task.id})" title="Restore task">↶ Restore</button>
+                            <button class="permanent-delete-btn" onclick="permanentlyDeleteTask(${task.id})" title="Delete permanently">🗑️</button>
+                        </div>
+                    `;
+                    deletedList.appendChild(li);
+                });
+            }
+        }
+
+        // Initialize on load
+        updateDateDisplay();
+        loadAccounts().then(() => {
+            renderTasks();
+            setupDragAndDrop();
+        });
+    </script>
+</body>
+</html>
